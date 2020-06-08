@@ -128,7 +128,7 @@ class Coreneuron(CMakePackage):
              '-DCMAKE_C_FLAGS=%s' % flags,
              '-DCMAKE_CXX_FLAGS=%s' % flags,
              '-DCMAKE_BUILD_TYPE=CUSTOM',
-             '-DCORENRN_ENABLE_REPORTINGLIB=%s'
+             '-DCORENRN_ENABLE_REPORTING=%s'
              % ('ON' if '+report' in spec else 'OFF'),
              '-DCORENRN_ENABLE_MPI=%s' % ('ON' if '+mpi' in spec else 'OFF'),
              '-DCORENRN_ENABLE_OPENMP=%s'
