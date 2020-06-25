@@ -16,7 +16,7 @@ class NeurodamusHippocampus(NeurodamusModel):
 
     mech_name = "hippocampus"
 
-    version('develop', branch='master', submodules=True, get_full_repo=False)
+    version('develop', branch='sandbox/awile/review_49688', submodules=True, get_full_repo=False)
     version('0.4', tag='0.4-1', submodules=True, get_full_repo=False)
     version('0.3', tag='0.3', submodules=True, get_full_repo=False)
     version('0.2', tag='0.2', submodules=True, get_full_repo=False)

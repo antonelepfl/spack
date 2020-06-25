@@ -19,8 +19,8 @@ class NeurodamusCore(SimModel):
     homepage = "ssh://bbpcode.epfl.ch/sim/neurodamus-core"
     git      = "ssh://bbpcode.epfl.ch/sim/neurodamus-core"
 
-    version('develop', branch='master', get_full_repo=False)
-    version('2.11.0', tag='2.11.0', get_full_repo=False, preferred=True)
+    version('develop', branch='sandbox/awile/review_49687', get_full_repo=False, preferred=True)
+    version('2.11.0', tag='2.11.0', get_full_repo=False)
     version('2.10.1', tag='2.10.1', get_full_repo=False)
     version('2.10.0', tag='2.10.0', get_full_repo=False)
     version('2.9.3', tag='2.9.3', get_full_repo=False)
