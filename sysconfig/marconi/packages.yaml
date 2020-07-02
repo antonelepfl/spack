@@ -9,11 +9,18 @@ packages:
             automake@1.13.4: /usr
         buildable: False
         version: [1.13.4]
+    binutils:
+        paths:
+            binutils@2.32: /usr
+        buildable: False
+        version: [2.32]
     bison:
         paths:
             bison@2.7: /usr
         buildable: False
         version: [2.7]
+    boost:
+        variants: +pic
     cmake:
         paths:
             cmake@3.12.0: /cineca/prod/opt/tools/cmake/3.12.0/none
@@ -24,12 +31,18 @@ packages:
             flex@2.5.37: /usr
         buildable: False
         version: [2.5.37]
+    gettext:
+        paths:
+            gettext@0.19.7: /usr
+        buildable: False
+        version: [0.19.7]
     hdf5:
         paths:
-            hdf5@1.8.18: /cineca/prod/opt/libraries/hdf5/1.8.18/intelmpi--2018--binary
+            hdf5@1.8.18+mpi+hl: /cineca/prod/opt/libraries/hdf5/1.8.18/intelmpi--2018--binary
+            hdf5@1.8.18~mpi+hl: /cineca/prod/opt/libraries/hdf5/1.8.18/openmpi--1-10.3--gnu--6.1.0
         variants: ~fortran ~cxx
         buildable: False
-        version: [1.8.17]
+        version: [1.8.18]
     intel-mpi-external:
         paths:
             intel-mpi-external@2018: /cineca/prod/opt/compilers/intel/pe-xe-2018/binary/impi/2018.4.274
@@ -52,13 +65,18 @@ packages:
         version: [0.27.1]
     python:
         paths:
+            python@3.6.4: /cineca/prod/opt/compilers/python/3.6.4/none
             python@2.7.12: /cineca/prod/opt/compilers/python/2.7.12/none
         buildable: False
-        version: [2.7.12]
+        version: [3.6.4, 2.7.12]
+    py-numpy:
+        paths:
+            py-numpy@1.14.0: /cineca/prod/opt/libraries/numpy/1.14.0/python--3.6.4
+        buildable: False
+        version: [1.14.0]
     zlib:
         paths:
-            zlib@1.2.11: /cineca/prod/opt/libraries/zlib/1.2.11/intel--pe-xe-2018--binary
-        buildable: False
+            zlib@1.2.11%intel: /cineca/prod/opt/libraries/zlib/1.2.11/intel--pe-xe-2018--binary
         version: [1.2.11]
     all:
         compiler: [intel]

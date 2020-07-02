@@ -74,7 +74,7 @@ class SimModel(Package):
 
         if '+profile' in self.spec:
             include_flag += ' -DENABLE_TAU_PROFILER'
-        output_dir = os.path.basename(self.spec.neuron_archdir)
+        output_dir = os.path.basename(self.nrnivmodl_outdir)
 
         if self.spec.satisfies('+coreneuron'):
             libnrncoremech = self.__build_mods_coreneuron(
@@ -89,8 +89,9 @@ class SimModel(Package):
         # Neuron mechlib and special
         with profiling_wrapper_on():
             link_flag += ' -L{0} -Wl,-rpath,{0}'.format(str(self.prefix.lib))
-            which('nrnivmodl')('-incflags', include_flag, '-loadflags',
-                               link_flag, mods_location)
+            which('nrnivmodl')('-incflags', include_flag,
+                               '-loadflags', link_flag,
+                               mods_location)
 
         assert os.path.isfile(os.path.join(output_dir, 'special'))
         return include_flag, link_flag
@@ -108,7 +109,7 @@ class SimModel(Package):
         with working_dir('build_' + self.mech_name, create=True):
             force_symlink(mods_location, 'mod')
             which('nrnivmodl-core')(*nrnivmodl_params)
-            output_dir = os.path.basename(self.spec.neuron_archdir)
+            output_dir = os.path.basename(self.nrnivmodl_outdir)
             mechlib = find_libraries('libcorenrnmech' + self.lib_suffix + '*',
                                      output_dir)
             assert len(mechlib.names) == 1,\
@@ -134,7 +135,7 @@ class SimModel(Package):
     def _install_binaries(self, mech_name=None):
         # Install special
         mech_name = mech_name or self.mech_name
-        arch = os.path.basename(self.spec.neuron_archdir)
+        arch = os.path.basename(self.nrnivmodl_outdir)
         prefix = self.prefix
 
         if self.spec.satisfies('+coreneuron'):
@@ -151,28 +152,37 @@ class SimModel(Package):
         # Install special
         shutil.copy(join_path(arch, 'special'), prefix.bin)
 
-        if self.spec.satisfies('^neuron~binary'):
-            # Install libnrnmech - might have several links.
-            for f in find(arch + '/.libs', 'libnrnmech*.so*', recursive=False):
+        if (self.spec.satisfies('^neuron~binary') or
+                self.spec.satisfies('^neuron+binary+cmake')):
+            # Install libnrnmech - might have several links
+            if self.spec.satisfies('^neuron+cmake'):
+                libnrnmech_path = self.nrnivmodl_outdir
+            else:
+                libnrnmech_path = self.nrnivmodl_outdir + '/.libs'
+            for f in find(libnrnmech_path,
+                          'libnrnmech.*',
+                          recursive=False):
                 if not os.path.islink(f):
                     bname = os.path.basename(f)
                     lib_dst = prefix.lib.join(
-                        bname[:bname.find('.')] + self.lib_suffix + '.so')
+                        bname[:bname.find('.')] + self.lib_suffix
+                        + '.' + dso_suffix)
                     shutil.move(f, lib_dst)  # Move so its not copied twice
                     break
             else:
                 raise Exception('No libnrnmech found')
 
-            # Patch special for the new libname
-            which('sed')('-i.bak',
-                         's#-dll .*#-dll %s "$@"#' % lib_dst,
-                         prefix.bin.special)
-            os.remove(prefix.bin.join('special.bak'))
+            if self.spec.satisfies('^neuron~binary'):
+                # Patch special for the new libname
+                which('sed')('-i.bak',
+                             's#-dll .*#-dll %s "$@"#' % lib_dst,
+                             prefix.bin.special)
+                os.remove(prefix.bin.join('special.bak'))
 
     def _install_src(self, prefix):
         """Copy original and translated c mods
         """
-        arch = os.path.basename(self.spec.neuron_archdir)
+        arch = os.path.basename(self.nrnivmodl_outdir)
         mkdirp(prefix.lib.mod, prefix.lib.hoc, prefix.lib.python)
         copy_all('mod', prefix.lib.mod)
         copy_all('hoc', prefix.lib.hoc)
@@ -184,6 +194,13 @@ class SimModel(Package):
 
     def _setup_build_environment_common(self, env):
         env.unset('LC_ALL')
+        # MPI wrappers know the actual compiler from OMPI_CC or MPICH_CC, which
+        # at build-time, are set to compiler wrappers. While that is correct,
+        # we dont want for with nrnivmodl since flags have been calculated
+        # manually. The chosen way to override those (unknown name) env vars
+        # is using setup_run_environment() from the MPI package.
+        if 'mpi' in self.spec:
+            self.spec['mpi'].package.setup_run_environment(env)
 
     def _setup_run_environment_common(self, env):
         # Dont export /lib as an ldpath.
@@ -194,7 +211,7 @@ class SimModel(Package):
                                  for envmod in env.env_modifications
                                  if envmod.name not in to_rm]
         if os.path.isdir(self.prefix.lib.hoc):
-            env.prepend_path('HOC_LIBRARY_PATH', self.prefix.lib.hoc)
+            env.set('HOC_LIBRARY_PATH', self.prefix.lib.hoc)
         if os.path.isdir(self.prefix.lib.python):
             env.prepend_path('PYTHONPATH', self.prefix.lib.python)
 

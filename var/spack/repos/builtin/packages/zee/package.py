@@ -36,9 +36,11 @@ class Zee(CMakePackage):
 
     depends_on('benchmark')
     depends_on('boost')
+    depends_on('cgal')
     depends_on('cmake@3:', type='build')
     depends_on('pkg-config', type='build')
     depends_on('git', type='build', when='+codechecks')
+    depends_on('igraph')
     depends_on('py-cmake-format', type='build', when='+codechecks')
     depends_on('py-pre-commit', type='build', when='+codechecks')
     depends_on('py-pyyaml', type='build', when='+codechecks')

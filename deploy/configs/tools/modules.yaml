@@ -32,9 +32,15 @@ modules:
       - cmake
       - cuda
       - cudnn
+      - darshan-runtime
+      - darshan-util
       - doxygen
       - emacs
+      - environment-modules
       - ffmpeg
+      - gdb
+      - git
+      - graphviz
       - hpctoolkit
       - hpe-mpi
       - ior

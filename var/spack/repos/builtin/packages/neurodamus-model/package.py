@@ -12,7 +12,6 @@ import llnl.util.tty as tty
 # Definitions
 _CORENRN_MODLIST_FNAME = "coreneuron_modlist.txt"
 _BUILD_NEURODAMUS_FNAME = "build_neurodamus.sh"
-_LIB_SUFFIX = "_nd"
 
 
 class NeurodamusModel(SimModel):
@@ -28,10 +27,11 @@ class NeurodamusModel(SimModel):
     # and dont rpath it so we stay dynamic.
     # 'run' mode will load the same mpi module
     depends_on("mpi", type=('build', 'run'))
-    depends_on('neurodamus-core', type='build')
+    depends_on('neurodamus-core', type=('build', 'run'))
     depends_on('neurodamus-core@develop', type='build', when='@develop')
     depends_on("hdf5+mpi")
     depends_on('reportinglib')
+    depends_on('libsonata-report')
     depends_on('reportinglib+profile', when='+profile')
     depends_on('synapsetool+mpi', when='+synapsetool')
     depends_on('py-mvdtool+mpi', type='run', when='+mvdtool')
@@ -42,7 +42,18 @@ class NeurodamusModel(SimModel):
     # and we must bring their dependencies.
     depends_on('zlib')  # for hdf5
 
-    phases = ['build_model', 'merge_hoc_mod', 'build', 'install']
+    phases = [
+        'setup_common_mods', 'build_model', 'merge_hoc_mod', 'build', 'install'
+    ]
+
+    def setup_common_mods(self, spec, prefix):
+        """Setup common mod files if provided through variant.
+        """
+        # If specified common_mods then we must change the source
+        # Particularly useful for CI of changes to models/common
+        if spec.variants['common_mods'].value != 'default':
+            shutil.move('common', '_common_orig')
+            force_symlink(spec.variants['common_mods'].value, 'common')
 
     def build_model(self, spec, prefix):
         """Build and install the bare model.
@@ -58,12 +69,6 @@ class NeurodamusModel(SimModel):
         so that incremental builds can actually happen.
         """
         core_prefix = spec['neurodamus-core'].prefix
-
-        # If specified common_mods then we must change the source
-        # Particularly useful for CI of changes to models/common
-        if spec.variants['common_mods'].value != 'default':
-            shutil.move('common', '_common_orig')
-            force_symlink(spec.variants['common_mods'].value, 'common')
 
         # If we shall build mods for coreneuron,
         # only bring from core those specified
@@ -92,7 +97,9 @@ class NeurodamusModel(SimModel):
         # link_flag += ' '
         #         + spec['synapsetool'].package.dependency_libs(spec).joined()
 
-        self.mech_name += _LIB_SUFFIX  # Final lib name
+        # Create the library with all the mod files as libnrnmech.so/.dylib
+        self.mech_name = ''
+
         if spec.satisfies('+synapsetool'):
             base_include_flag = "-DENABLE_SYNTOOL"
         else:
@@ -152,7 +159,7 @@ class NeurodamusModel(SimModel):
             #  - NRNMECH_LIB_PATH the combined lib (used by neurodamus-py)
             #  - BGLIBPY_MOD_LIBRARY_PATH is the pure mechanism
             #        (used by bglib-py)
-            if '_nd.' in libnrnmech_name:
+            if 'libnrnmech.' in libnrnmech_name:
                 env.set('NRNMECH_LIB_PATH', libnrnmech_name)
             else:
                 env.set('BGLIBPY_MOD_LIBRARY_PATH', libnrnmech_name)
