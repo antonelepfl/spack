@@ -1,9 +1,9 @@
 from spack import *
 
 
-class PyCgalPybind(CMakePackage):
-    """Apply several steps of filtering on touches
-    """
+class PyCgalPybind(PythonPackage):
+    """Internal Python bindgins for CGAL"""
+
     homepage = "example.com"
     git      = "ssh://bbpcode.epfl.ch/common/cgal-pybind"
 
@@ -14,6 +14,8 @@ class PyCgalPybind(CMakePackage):
     depends_on('cgal')
     depends_on('eigen')
     depends_on('py-pybind11')
+
+    depends_on('py-numpy@1.12:', type=('build', 'run'))
 
     #def patch(self):
     #    """Prevent `-isystem /usr/include` from appearing, since this confuses gcc.
