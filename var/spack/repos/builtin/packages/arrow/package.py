@@ -19,6 +19,8 @@ class Arrow(CMakePackage):
     version('0.14.1', sha256='69d9de9ec60a3080543b28a5334dbaf892ca34235b8bd8f8c1c01a33253926c1')
     version('0.14.0', sha256='e6444a73cc7987245e0c89161e587337469d26a518c9af1e6d7dba47027e0cd1')
     version('0.13.0', sha256='380fcc51f0bf98e13148300c87833e734cbcd7b74dddc4bce93829e7f7e4208b')
+    # Trigger a rebuild with a pseudo-version
+    version('0.12.1p0', sha256='aae68622edc3dcadaa16b2d25ae3f00290d5233100321993427b03bcf5b1dd3b')
     version('0.12.1', sha256='aae68622edc3dcadaa16b2d25ae3f00290d5233100321993427b03bcf5b1dd3b')
     version('0.11.0', sha256='0ac629a7775d86108e403eb66d9f1a3d3bdd6b3a497a86228aa4e8143364b7cc')
     version('0.9.0', sha256='65f89a3910b6df02ac71e4d4283db9b02c5b3f1e627346c7b6a5982ae994af91')
