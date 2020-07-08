@@ -53,13 +53,13 @@ class Arrow(CMakePackage):
     def cmake_args(self):
         args = [
             "-DBoost_DEBUG=ON",
-            "-DBUILD_SHARED_LIBS=ON",
             "-DARROW_USE_SSE=ON",
             "-DARROW_BUILD_SHARED=ON",
-            "-DARROW_BUILD_STATIC=OFF",
+            "-DARROW_BUILD_STATIC=ON",
             "-DARROW_BUILD_TESTS=OFF",
             "-DARROW_WITH_BROTLI=OFF",
             "-DARROW_WITH_LZ4=OFF",
+            "-DARROW_WITH_SNAPPY=ON",
         ]
         if self.spec.satisfies('+python'):
             args.append("-DARROW_PYTHON:BOOL=ON")
