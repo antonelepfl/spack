@@ -9,7 +9,6 @@ from contextlib import contextmanager
 import os
 import shutil
 
-
 class SimModel(Package):
     """The abstract base package for simulation models.
 
@@ -76,7 +75,8 @@ class SimModel(Package):
             include_flag += ' -DENABLE_TAU_PROFILER'
         output_dir = os.path.basename(self.nrnivmodl_outdir)
 
-        if self.spec.satisfies('+coreneuron'):
+        # Link with coreneuron only when there are dependencies
+        if self.spec.satisfies('+coreneuron') and dependencies:
             libnrncoremech = self.__build_mods_coreneuron(
                 corenrn_mods or mods_location, link_flag, include_flag
             )
@@ -139,15 +139,17 @@ class SimModel(Package):
         prefix = self.prefix
 
         if self.spec.satisfies('+coreneuron'):
-            with working_dir('build_' + mech_name):
-                if self.spec.satisfies('^coreneuron@0.0:0.14'):
-                    raise Exception('Coreneuron versions before 0.14 are'
-                                    'not supported by Neurodamus model')
-                elif self.spec.satisfies('^coreneuron@0.14:0.16.99'):
-                    which('nrnivmech_install.sh', path=".")(prefix)
-                else:
-                    # Set dest to install
-                    which('nrnivmodl-core')("-d", prefix, 'mod')
+            build_path = 'build_' + mech_name
+            if os.path.isdir(build_path):
+                with working_dir(build_path):
+                    if self.spec.satisfies('^coreneuron@0.0:0.14'):
+                        raise Exception('Coreneuron versions before 0.14 are'
+                                        'not supported by Neurodamus model')
+                    elif self.spec.satisfies('^coreneuron@0.14:0.16.99'):
+                        which('nrnivmech_install.sh', path=".")(prefix)
+                    else:
+                        # Set dest to install
+                        which('nrnivmodl-core')("-d", prefix, 'mod')
 
         # Install special
         shutil.copy(join_path(arch, 'special'), prefix.bin)
