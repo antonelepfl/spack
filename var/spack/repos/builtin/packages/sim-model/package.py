@@ -9,6 +9,7 @@ from contextlib import contextmanager
 import os
 import shutil
 
+
 class SimModel(Package):
     """The abstract base package for simulation models.
 
