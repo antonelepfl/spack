@@ -370,6 +370,7 @@ class Neuron(CMakePackage):
         specific directory by looking for a specific binary.
         """
         if self.spec.satisfies("+cmake"):
+            # TODO : fix this when neuron provides an easy way to detect arch directory 
             neuron_arch = subprocess.Popen(["uname", "-p"],
                                            stdout=subprocess.PIPE) \
                 .communicate()[0].decode('UTF-8').rstrip()
