@@ -23,18 +23,15 @@
 from spack import *
 
 
-class Netpyne(PythonPackage):
+class PyNetpyne(PythonPackage):
     """Netpyne: A python package to facilitate the development, parallel simulation, 
     optimization and analysis of multiscale biological neuronal networks in NEURON."""
 
-    # FIXME: Add a proper url for your package's homepage here.
     homepage = "http://www.netpyne.org/"
     git      = "https://github.com/Neurosim-lab/netpyne.git"
 
-    # FIXME: Add proper versions and checksums here.
     version('develop', git=git, branch='master')
-    version('coreneuron', git=git, branch='coreneuron')
-    version('0.9.3.1', git=git, tag='v0.9.3.1')
+    version('0.9.6', git=git, tag='v0.9.6')
 
     depends_on('py-setuptools', type='build')
     depends_on('py-setuptools-scm', type='build')
@@ -46,8 +43,6 @@ class Netpyne(PythonPackage):
     depends_on('py-pandas', type='run')
     depends_on('py-scipy', type='run')
 
-    # FIXME: Add dependencies if required.
     depends_on('python@3.6:')
     depends_on('neuron+coreneuron+python')
     depends_on('coreneuron', when='@coreneuron')
-    
