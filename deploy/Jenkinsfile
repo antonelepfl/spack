@@ -364,10 +364,12 @@ pipeline {
                     }
 
                     steps {
-                        sh """
-                            shopt -s extglob
-                            rsync -av --exclude="2018-12-*" ${DEPLOYMENT_ROOT}/{config,deploy,modules,spack} bbptadm:${DEPLOYMENT_ROOT}
-                        """
+                        catchError(buildResult: 'SUCCESS', stageResult: 'FAILURE') {
+                            sh """
+                                shopt -s extglob
+                                rsync -av --exclude="2018-12-*" ${DEPLOYMENT_ROOT}/{config,deploy,modules,spack} bbptadm:${DEPLOYMENT_ROOT}
+                            """
+                        }
                     }
                 }
             }
