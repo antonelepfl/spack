@@ -31,6 +31,7 @@ class Synapsetool(CMakePackage):
     variant('mpi', default=True, description="Enable MPI backend")
     variant('shared', default=True, description="Build shared library")
     variant('python', default=False, description="Enable syntool Python package")
+    variant('debug', default=False, description='build in debug mode')
 
     depends_on('boost@1.55:')
     depends_on('cmake@3.0:', type='build')
@@ -88,5 +89,7 @@ class Synapsetool(CMakePackage):
 
         if spec.satisfies('~shared'):
             args.append('-DCOMPILE_LIBRARY_TYPE=STATIC')
+        if spec.satisfies('+debug'):
+            args.append('-DCMAKE_BUILD_TYPE=DEBUG')
 
         return args
