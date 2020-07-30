@@ -19,7 +19,7 @@ class NeurodamusCore(SimModel):
     homepage = "ssh://bbpcode.epfl.ch/sim/neurodamus-core"
     git      = "ssh://bbpcode.epfl.ch/sim/neurodamus-core"
 
-    version('develop', branch='sandbox/leite/ngv', get_full_repo=False)
+    version('develop', branch='master', get_full_repo=False)
 
     variant('mpi',    default=True,  description="Enable MPI support")
     variant('common', default=False, description="Bring in common synapse mechanisms")
